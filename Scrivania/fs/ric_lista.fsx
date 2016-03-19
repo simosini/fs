@@ -29,8 +29,8 @@ let rec cmpLength(l1,l2) =
 let rec remove(x, l) = 
     match l with
         | [] -> []
-        | h::tl when [h]=x -> h@remove(x,tl)
-        | h::tl ->  remove(x,tl)
+        | h::tl when h=x -> remove(x,tl)
+        | h::tl -> h::remove(x,tl)
 
 let rec downto0 x =
     match x with
