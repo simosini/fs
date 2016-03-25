@@ -1,0 +1,9 @@
+# Binaries (forces name to be main)
+*main
+
+# Input files
+*.input
+
+# fs
+*.exe
+
