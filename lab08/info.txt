@@ -1,0 +1,14 @@
+NOME: Simone
+
+COGNOME: Sinigaglia
+
+MATRICOLA: 828670
+
+CORSO DI LAUREA: Informatica Triennale
+
+ANNO DI CORSO: Terzo
+
+Quali linguaggi di programmazione conosci?
+ Java, C, Python, OCaMl, Erlang, Scala.
+Hai seguito altri corsi con elementi di programmazione funzionale?
+ Linguaggi di Programmazione con Prof. Cazzola
