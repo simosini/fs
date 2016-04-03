@@ -4,6 +4,9 @@
 # Input files
 *.input
 
-# fs
+# fs executables
 *.exe
+
+# dll files
+*.dll
 
