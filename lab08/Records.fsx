@@ -1,4 +1,4 @@
-////////////////////////////////////////////////
+﻿////////////////////////////////////////////////
 
 // From Section 6.5 Expression trees
 #r "FsCheck"
@@ -64,6 +64,7 @@ let (@@) m n = Prod(m,n);;
 // examples
 // ((3 * 5) mod 2 ) + 12 
 let a1 =   (Mod2(C(3)  @@ C(5))) ++ C(12);;
+let a2 = Sum(Mod2(Prod(C(5), C(3))), C(12));;
 
 
 // explain natural semantics: e >> v  and trace ((3 * 5) mod 2 ) + 12 
@@ -78,6 +79,7 @@ let rec eval t  =
     | Prod(t1,t2) -> eval t1  * eval t2 ;;
 
 let r1 = eval a1;;
+let r2 = eval a2;;
 
 (* un esempio di compilazione su AST: semplificazione con 0, basato su
 equazioni:
@@ -94,15 +96,16 @@ let rec opt e =
     | Sum(C 0,a) | Sum(a,C 0) ->  opt a
     | Sum(n1,n2) -> Sum(opt n1,opt n2)
     | Prod(C 0,_) | Prod(_,C 0) ->  C 0
+    | Prod(C 1,a) | Prod(a,C 1) -> opt a
     | Prod(n1,n2) -> Prod(opt n1,opt n2)
-    | Mod2 a -> Mod2 (opt a)
+    | Mod2 a -> Mod2 (opt a);;
 
 
 // validiamo  la correttezza della trasformazione:
 // se ottimizzo e poi valuto ottengo lo stesso che valutare    
 let prop_opt a =
-  eval a = (opt a |> eval)
-do Check.Quick prop_opt
+  eval a = (opt a |> eval);;
+do Check.Quick prop_opt;;
 
 
 (*
@@ -122,13 +125,14 @@ type aexpv =
   | V of string          // NEW !
   | Sum of aexpv * aexpv
   | Prod of aexpv * aexpv
-  | Mod2 of aexpv;;
+  | Mod2 of aexpv
+  | Neg of aexpv;;
 
 
  (*
-We can evaluate such an expression ony of we know how to evaluate a
+We can evaluate such an expression only if we know how to evaluate a
  variable. Similarly to what F# does, we use an environment, ie a
- finite map of variables to values, to record and looup values of vars
+ finite map of variables to values, to record and lookup values of vars
 
 env ::= empty | env + (x -> v)
 
@@ -151,7 +155,7 @@ let envyx = Map.add "y" 4 (Map.add "x" -7 envy);;
 // It's easier to turn a list of pairs into  a map
 let envyx2 = Map.ofList [("y", 3), ("x", - 7)];;
 
-//	lookup in an enviroment is like array selection
+//  lookup in an enviroment is like array selection
  let three = Map.find "y" envy ;;
 
 // also in array-like notation
@@ -172,26 +176,33 @@ env |- e >> v has rules  as follows:
 
 
 env(x) = v
-------------	
+------------    
 env |- x >> v
 *)
 
 
 let et =
     Prod(Mod2 (C 5),
-         Sum( (C (- 3)),
+         Sum(Neg (C 3),
              Sum(V "x", V "y")));;
+
+let et2 = Prod(V "x", V "y");;
 
 let rec aeval t env =
     match t with
     | C n      -> n
     | V s      -> Map.find s env
+    | Neg t     -> - aeval t env
     | Mod2 t      ->   aeval t env  % 2
     | Sum(t1,t2)   -> aeval t1 env + aeval t2 env
     | Prod(t1,t2)  -> aeval t1 env * aeval t2 env;;
-
+   
 let res = aeval et envyx;;
-
+let res2 = aeval et2 envyx;;
+let env2 = Map.add "x" 3 Map.empty;
+let env3 = Map.add "y" 4 env2;;
+aeval et2 env3;;
+let env4 = Map.add "z" res env3;;
 /////////////// MUTREC
 
 
@@ -418,3 +429,4 @@ let cost3 item = item.weight * item.uprice ;;
 // val cost3 : Item -> float
 
 cost3 it3 ;;  
+
