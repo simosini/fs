@@ -4,6 +4,9 @@
 # Input files
 *.input
 
+#pdf slides
+*.pdf
+
 # fs executables
 *.exe
 
