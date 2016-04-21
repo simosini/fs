@@ -13,3 +13,5 @@
 # dll files
 *.dll
 
+# text files
+*.txt
