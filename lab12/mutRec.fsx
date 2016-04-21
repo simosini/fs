@@ -1,9 +1,11 @@
+#r "FsCheck"
+open FsCheck
 
 (**   MUTUAL  RECURSION   **)
 
-(*
 
-Si ha *ricorsione mutua*  (*mutual recursion*)  quando
+
+(* Si ha ricorsione mutua  mutual recursion  quando
 due o piu' definizioni si richiamano a vicenda
 (ad esempio, per definire  un elemento  A si usa  B e,
 contestualmente, per definira B si usa A).
@@ -12,9 +14,9 @@ In F#, le definizioni che si richiamano per ricorsione mutua vanno legate da
 *and* (vedi gli esempi)
 
 
-*)   
+   
 
-(*
+
 
 Esempio 1: pari e dispari
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -96,6 +98,7 @@ let prop_even_ev n =
   let isEven = (n % 2  = 0) // isEven = true sse n e' pari
   [n >= 0 ==> lazy (even n = isEven );
    n >= 0 ==> lazy (odd n = not isEven  )]  
+
 Check.Quick prop_even_ev
 
 

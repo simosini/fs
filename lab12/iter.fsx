@@ -276,7 +276,7 @@ Tail recursion
 ^^^^^^^^^^^^^^
 
 Quando in una funzione ricorsiva la chiamata ricorsiva viene operata
-come ultimo passo (come in factA) si parla di *ricorsione in coda* (*tail recursion*).
+come ultimo passo (come in factA) si parla di *ricorsione in coda* tail recursion.
 
 Una funzione in cui le chiamate ricorsive sono in coda (ad es., la funzione ifact)
 e' detta *iterativa*.
