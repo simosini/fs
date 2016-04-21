@@ -1,4 +1,11 @@
-﻿type 'a binTree = Null | Node of 'a * 'a binTree * 'a binTree;;
+﻿ (*Beware this file does not work on Fsharpi because of indentation problems
+ though the code works fine, you just cannot check it  *)
+
+ 
+ 
+#r "FsCheck";;
+open FsCheck
+Type 'a binTree = Null | Node of 'a * 'a binTree * 'a binTree;;
 
 let t2 = Node (2, Null, Node ( 4 , Null, Null ) );; 
 let t7 = Node (7, Null, Node (10, Null, Node ( 13 , Null, Null ))) ;; 
