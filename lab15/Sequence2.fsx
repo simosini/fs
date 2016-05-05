@@ -14,8 +14,10 @@ let cons x s = seq {
 
 let rec sieve sq = Seq.delay(fun() ->
     let n = Seq.head sq in 
-        cons n (sift n (sieve (Seq.tail sq))));; 
+        cons n (sieve (sift n (Seq.skip 1 sq))));; 
 
+let primes = sieve (Seq.initInfinite (fun n -> n + 2));;
+Seq.item 700 primes;;
 //es3
 let rec intFrom n = Seq.delay (fun () -> cons n (intFrom (n+1)));;
 Seq.take 10 (sieve (intFrom 2)) |> Seq.toList;; // [2; 3; 5...]
@@ -23,24 +25,26 @@ Seq.take 10 (sieve (intFrom 2)) |> Seq.toList;; // [2; 3; 5...]
 //es4
 let siftC a sq = Seq.cache (sift a sq);;
 
-let rec sieveC sq = Seq.delay(fun() ->
-    let n = Seq.head sq in 
-        cons n (siftC n (sieveC (Seq.tail sq))));;
-
-let nat2 = intFrom 2;;
-let primesC = Seq.cache (sieveC nat2);; 
-Seq.item 200 primesC;; //very slow
-Seq.item 202 primesC;; //fast due to caching of previous evaluation
+let rec sieveC sq = 
+    Seq.cache
+        (Seq.delay(fun() ->
+            let n = Seq.head sq in 
+                cons n (sieveC (siftC n (Seq.skip 1 sq)))));;
+                    
+let primesC = Seq.cache primes;; 
+Seq.item 200 primesC;; //very slow increase number slowly
+Seq.item 1000 primesC;; //super slow if u strasrts from here
+Seq.item 1001 primesC;; // immediate before of caching
 
 //     ELENCO DEI FILE IN UNA DIRECTORY
 open System.IO
-let myDir = "/home/simosini/Documents/"
+let myDir = "/home/simosini/Documents/FS"
 Directory.GetFiles myDir;;
 Directory.GetDirectories myDir;;
 
-let allFiles dir = seq{
-    yield! (Directory.GetFiles dir) 
-    yield! (Seq.collect (Directory.GetFiles) (Directory.GetDirectories dir))  
+let rec allFiles dir = seq{
+    yield! Directory.GetFiles dir 
+    yield! Seq.collect allFiles (Directory.GetDirectories dir)  
     };;
 allFiles myDir |> Seq.length;;
 
