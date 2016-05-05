@@ -139,13 +139,65 @@ Seq.take 3 rsqTrue;; //[true; true; true]
 let rec rsqTrueFalse =  Seq.delay(fun () -> cons true (cons false (rsqTrueFalse)));;
 Seq.take 4 rsqTrueFalse;; //[true; false; true; false]
 
-//        EXERCISES
+//        EXERCISES MAP
 
 //i
 let rec map  sq f = Seq.delay(fun() -> cons (f (Seq.head sq))(map (Seq.tail sq) f));;
 
 //ii
 let seq1 = map (intFrom 0) (fun x -> x * x);;
-Seq.take 15 sq1;; // [0; 1; 4; 9; ...]
+Seq.take 15 seq1;; // [0; 1; 4; 9; ...]
 
 //iii
+let rec finiteMap sq f = Seq.delay(fun() -> 
+           if Seq.isEmpty sq then Seq.empty
+           else cons (f (Seq.head sq))(map (Seq.tail sq) f));;
+ 
+let seq2 = seq [1;2;3;4];;       
+let seq3 = finiteMap seq2 (fun x -> x * x);;
+Seq.take 4 seq3;;
+
+//          EXERISES FILTER
+//i
+let rec filter f sq = Seq.delay(fun () -> 
+    let el = Seq.head sq in
+        if f el then cons el (filter f (Seq.tail sq))
+        else  filter f (Seq.tail sq));;
+
+//ii
+let mulOf3 = filter (fun x -> x % 3 = 0) (intFrom 0);
+Seq.take 20 mulOf3 |> Seq.toList;; // [0; 3; 6; 9; ...]
+//use toList to display all thr numbers of the seq
+
+//          FIBONACCI
+
+//I
+
+let rec fibFrom n1 n2 = Seq.delay (fun() ->
+    cons n1 (cons n2 (fibFrom (n1+n2) (2*n2 + n1))));;
+Seq.take 10 (fibFrom 5 10) |> Seq.toList;; //[5; 10; 15; 25; 40...]
+
+//ii
+let fib n = 
+    if n = 0 then 1
+    else Seq.item (n-1) (fibFrom 1 2);; 
+
+fib 0 ;;   // 1
+fib 1 ;;   // 1
+fib 2 ;;   // 2
+fib 3 ;;   // 3
+fib 4 ;;   // 5
+fib 10 ;;  // 89
+
+//          SEQUENZA DELLE SOMME DI UNA SEQUENZA
+
+//i
+let sum sq = Seq.fold (+) 0 sq;;
+
+let sumSeq sq = 
+    let rec aux n =
+        Seq.delay (fun() -> cons (sum (Seq.take n sq))(aux (n+1)))
+     in aux 1;;
+
+//ii
+Seq.take 15 (sumSeq (intFrom 0)) |> Seq.toList;; //[0; 1; 3; 6; 10...]

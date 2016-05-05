@@ -144,18 +144,12 @@ Seq.item 9 sq2 ;;  // 3    (e9, ultimo elemento di sq2)
 (*
 
  Esiste una analoga funzione per le liste
-
-  List.nth  'a list -> int -> 'a list
-
-in cui i due argomenti sono invertiti:
-
-  List.nth ls n = elemento in posizione n di ls
-  
+   
 *)
 
-List.item [0 .. 9 ] 0 ;; // 0 , primo elemento di [0 .. 9 ]
-List.item [0 .. 9 ] 9 ;; // 9 , ultimo elemento di [0 .. 9 ]
-// List.nth [0 .. 9 ] 10 solleva una eccezione
+List.item 0 [0 .. 9 ] ;; // 0 , primo elemento di [0 .. 9 ]
+List.item 9 [0 .. 9 ]  ;; // 9 , ultimo elemento di [0 .. 9 ]
+// List.nth 10 [0 .. 9 ]  solleva una eccezione
 
 (*
 
@@ -200,8 +194,8 @@ let sq3 = Seq.take 2 sq1 ;;
 let sq4 = Seq.skip 2 sq2 ;; 
 // sq4 = seq [1; 2; 3; 200; 0; 1; 2; 3]
 
- Seq.nth 0 sq4 ;; // 1
- Seq.nth 1 sq4 ;; // 2
+ Seq.item 0 sq4 ;; // 1
+ Seq.item 1 sq4 ;; // 2
 
 
 (*
@@ -248,7 +242,7 @@ ii) Usando le funzioni predefinite sulle sequenze, definire le funzioni
 analoghe alle omonime funzioni su liste.     
 Vericare che:
 
--  head sq2 =00
+-  head sq2 = 100
 -  la lista degli elementi nella sequenza 'tail sq2' e'
    [0; 1; 2; 3; 200; 0; 1; 2; 3]
 
@@ -309,18 +303,19 @@ let sqLz = seq {
 
 // La definizione di seqlz non produce errori in quanto la definizione non genera alcun elemento
 
-Seq.nth 0  sqLz ;; // 0
+Seq.item 0  sqLz ;; // 0
 // nella valutazione viene generato solamente il primo elemento di sqLz
 
-Seq.nth 1  sqLz ;; // 1
+Seq.item 1  sqLz ;; // 1
 // nella valutazione vengono  generati solamente i primi due elementi di sqLz
 
 (*
 
 Verificare cosa succede calcolando
 
-Seq.nth 2  sqLz ;; 
-Seq.nth 3  sqLz ;;
+Seq.item 2  sqLz;;
+Seq.item 3 sqLz;;
+
 
 In entrambi i casi viene valutata l'espressione 2/0, e questo solleva una eccezione.
 
