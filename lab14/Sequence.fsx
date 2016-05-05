@@ -138,3 +138,14 @@ Seq.take 3 rsqTrue;; //[true; true; true]
 // genera sequenza infinita true, false, true, false, ...
 let rec rsqTrueFalse =  Seq.delay(fun () -> cons true (cons false (rsqTrueFalse)));;
 Seq.take 4 rsqTrueFalse;; //[true; false; true; false]
+
+//        EXERCISES
+
+//i
+let rec map  sq f = Seq.delay(fun() -> cons (f (Seq.head sq))(map (Seq.tail sq) f));;
+
+//ii
+let seq1 = map (intFrom 0) (fun x -> x * x);;
+Seq.take 15 sq1;; // [0; 1; 4; 9; ...]
+
+//iii
