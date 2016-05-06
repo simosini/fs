@@ -34,7 +34,7 @@ let rec sieveC sq =
 let primesC = Seq.cache primes;; 
 Seq.item 200 primesC;; //very slow increase number slowly
 Seq.item 1000 primesC;; //super slow if u strasrts from here
-Seq.item 1001 primesC;; // immediate before of caching
+Seq.item 1001 primesC;; // immediate because of caching
 
 //     ELENCO DEI FILE IN UNA DIRECTORY
 open System.IO
@@ -56,16 +56,44 @@ let fact n =
     aux 1 n;;
 fact 5;;
 
-let f (x : float) (k : int) = (pown x k) / (float(fact k));;
-let sum sq = Seq.fold (+) 0. sq;;
+let taylEl x k = pown x k / (float(fact k));;
+
 
 let sumSeq (sq : seq<float>)  = 
     let rec aux n =
-        Seq.delay (fun() -> cons (sum (Seq.take n sq))(aux (n+1)))
+        Seq.delay (fun() -> cons (Seq.reduce(+) (Seq.take n sq))(aux (n+1)))
      in aux 1;;
-let seqT (n : float) = Seq.initInfinite(fun x -> f n x);;   
+//same as sumSeq but using yield
+let sumSeq2 (sq : seq<float>) =
+    let rec aux n = seq{
+        yield Seq.reduce(+) (Seq.take n sq)
+        yield! aux (n + 1)
+        }
+    in aux 1;;
+//same again but more efficient
+//supposed the sequence is incremental starting from n 
+let rec sums acc n = seq{ 
+    yield acc
+    yield! sums (acc + n) (n + 1.)
+    };;         
+//passing f to use it in taylor approx  
+let rec sums2 f x (acc : float) n = seq{ 
+    yield acc
+    yield! sums2 f x (acc + (f x n)) (n + 1)
+    };;
+//first 1.is value of x in e^x
+//second 1. is the starting value to accumulate which is x^0/0! first term of the expansion
+//last 1 is the index of the series the index 0 is already contained in acc
+Seq.take 10 (sums2 (taylEl) 1. 1. 1) |> Seq.toList;; 
+                  
+
+Seq.take 5 (sumSeq [0.; 1.; 2.; 3.; 4.; 5.]) |> Seq.toList;;
+Seq.take 5 (sumSeq2 [0.; 1.; 2.; 3.; 4.; 5.]) |> Seq.toList;;
+Seq.take 5 (sums 0. 1.) |> Seq.toList;; // [0.0; 1.0; 3.0; 6.0; 10.0]
+
+let seqT n = Seq.initInfinite(fun x -> taylEl n x);;   
 Seq.take 5 (seqT 2.) |> Seq.toList;;  
-let apprTaylor (x : float) = sumSeq (seqT x);;
+let apprTaylor x = sumSeq (seqT x);;
 Seq.take 12(apprTaylor 1.0) |> Seq.toList;;
 let tay10 = apprTaylor 1.0;;
 Seq.item 4 tay10;;
@@ -86,8 +114,41 @@ apprExp 1.0 0.0001 ;;
 apprExp 1.0 0.0000001 ;;
 // val it : float = 2.718281801
 
-apprExp 2.5 0.0000001 ;;
+apprExp 2.5 0.0000001 ;;a<
 // val it : float = 12.18249394
+ 
+// LAZYAND
 
+let t1 =  lazy ( 10 +  2 ) ;;
 
-          
+t1.Force ();;
+
+//without lazy keyWord
+let lazyAnd lb1  lb2 =
+   match lb1() with
+        | false -> lazyFalse
+        | _ -> lb2;;
+
+let e1 = (fun x ->   5 > 0) :   (unit -> bool);; 
+let e2 = (fun x ->  10 < 0)  :  (unit -> bool);;
+let e3 = (fun x ->  2/0 > 0) :  (unit -> bool);;
+
+lazyAnd e1 e2 ();;  //false dont evaluate second term 
+
+//with lazy keyword
+let lazyTrue2 = lazy true;;
+let lazyFalse2 = lazy false;;
+
+lazyTrue2.Force ();;
+
+let lazyAnd2 (lb1 : Lazy<bool>) (lb2 : Lazy<bool>) = 
+    match lb1.Force () with
+        | false -> lazyFalse2
+        | _ -> lb2 ;;
+
+let e1 = lazy(5 > 0);; 
+let e2 = lazy(10 < 0);; 
+let e3 = lazy(2/0 > 0);;
+
+let w3 = lazyAnd2 e2 e3;; //val w3 : Lazy<bool> = Value is not created.
+w3.Force ();; //val it : bool = false

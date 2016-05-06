@@ -836,7 +836,7 @@ Altri esempi:
 -  Sappiamo che 0 * n vale 0,  qualunque sia n.
    La valutazione di
 
-      0 *  Expr
+let       0 *  Expr
 
    e' piu' efficiente se effettuata in modalita' lazy
    (calcolare Expr potrebbe essere computazionalmente pesante)                         
@@ -849,7 +849,7 @@ Altri esempi:
 
     let first x y = x ;;  // il valore di y non e' usato in first
 
-  Anche in questo caso sarebbe la valutazione lazy sarebeb piu' efficiente,
+  Anche in questo caso la valutazione lazy sarebbe piu' efficiente,
   dato che e' inutile valutare il secondo argomento
 
 Vediamo attraverso un esempio come si puo' forzare la lazy evaluation di una espressione
@@ -968,8 +968,10 @@ let lazyTrue  =  (fun x ->  true)  : (unit -> bool)   // rappresentazione lazy d
 let lazyFalse =  (fun x ->  false) : (unit -> bool)   // rappresentazione lazy di false
 
 
-// let lazyAnd lb1  lb2 =
- 
+let lazyAnd lb1  lb2 =
+   match lb1() with
+        | false -> lazyFalse
+        | _ -> lb2;;
 // Esempi
 
 let e1 = (fun x ->   5 > 0) :   (unit -> bool) 
