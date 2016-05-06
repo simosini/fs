@@ -152,3 +152,20 @@ let e3 = lazy(2/0 > 0);;
 
 let w3 = lazyAnd2 e2 e3;; //val w3 : Lazy<bool> = Value is not created.
 w3.Force ();; //val it : bool = false
+
+#r "FsCheck"
+open FsCheck
+
+//with lazy means evaluate second part iff the first part is true
+let invMin (ls : int list) =
+  ls <> []  ==> lazy (  List.min ls  =     (List.sort ls |>  List.head) )  ;;
+// val invMin : int list -> Property
+
+Check.Quick invMin ;;
+
+//without lazy it will raise an exception at the first test where n = 0
+let invLz n =
+  n <> 0 ==>   lazy ( n * 1/n = 1 ) ;;
+//val invL :int -> Property
+
+Check.Quick invLz ;;
