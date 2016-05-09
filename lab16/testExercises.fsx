@@ -45,10 +45,18 @@ Gen.sample 500 5 (Arb.toGen(Arb.filter (fun x -> x > 100) Arb.from<int>));;
 let rec order = function
     | [] -> true
     | [x] -> true
-    | h1::h2::t -> h1 <= h2 && (order t);;  
+    | h1::h2::t -> h1 <= h2 && (order (h2::t));;  
 
 order [1;2;5;4];; //false
 order [1;2;3];; //true
 
 //let's generate arb int list not empty with max 50 elements
-Gen.sample 50 10 (
+Arb.filter (fun l -> List.isEmpty l |> not) Arb.from<int list>;;
+Gen.sample 50 10 (Arb.toGen(Arb.filter (fun l -> List.isEmpty l |> not) Arb.from<int list>));;
+//let's say we also want ordered lists
+let filter l = order l && (List.isEmpty l |> not);;
+
+let ordArb =
+    Arb.filter (fun l -> filter l) Arb.from<int list>;;
+
+Gen.sample 50 10 (Arb.toGen ordArb);;
