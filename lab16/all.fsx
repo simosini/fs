@@ -285,6 +285,7 @@ let eos = look orderedNEArb
 let orderedMapArb =
   Arb.mapFilter List.sort ordered Arb.from<list<int>>
 
+look orderedMapArb;;
 let bs = look orderedMapArb
 
 // Now, how can we say to QC to use this generator, rather than the standard one?
