@@ -1,14 +1,13 @@
 ﻿module Queue
 
-type Queue<'a> =  {front: 'a list; rear: 'a list}
 exception EmptyQueue
+type Queue<'a> =  {front: 'a list; rear: 'a list}
+
 
 let empty = {front = []; rear = []}
 
-let put el = function
-    | {front = a; rear  = []} -> {front = a ; rear = [el]}
-    | {front = a ; rear  = l} ->  {front = a; rear = el::l}
-
+let put el {front = l1 ; rear = l2} = {front = l1; rear = el::l2}
+    
 let rec get = function
     | {front = [] ; rear = []} -> raise EmptyQueue
     | {front = [] ; rear = l} -> get {front = List.rev l ; rear = []}
