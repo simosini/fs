@@ -43,6 +43,8 @@ let ordered = Arb.filter (fun x -> x > 0) Arb.from<int>;;
 Gen.sample 500 10 (Arb.toGen ordered);; //[2; 41; 152; 9; 183; 264; 25; 325; 17; 47]
 //now let's say we want numbers > 100
 Gen.sample 500 5 (Arb.toGen(Arb.filter (fun x -> x > 100) Arb.from<int>));;
+//or using pipes
+Arb.from<int> |> Arb.filter (fun x -> x > 100) |> Arb.toGen |> Gen.sample 500 5
 
 //ok now let's try with ordered lists
 let rec order = function
@@ -58,7 +60,7 @@ Arb.filter (fun l -> List.isEmpty l |> not) Arb.from<int list>;;
 Gen.sample 50 10 (Arb.toGen(Arb.filter (fun l -> List.isEmpty l |> not) Arb.from<int list>));;
 //let's say we also want ordered lists
 let filter l = order l && (List.isEmpty l |> not);;
-
+//this is an Arb of int list with the given properties
 let ordArb =
     Arb.from<int list> |> Arb.filter (fun l -> filter l) ;;
 
@@ -98,7 +100,7 @@ let rec removeDup xs =
 let filter3 l = List.sort l |> removeDup;;
 let filter4 l = List.length l > 4;; 
 let orderedNoDupArb =
-    Arb.from<int list> |> Arb.mapFilter filter3 filter4;;
+    Arb.from<int list> |> Arb.mapFilter filter3 filter4;; //first function can be anything the second must be boolean
  //in this ex use we also set the maximum length to 10
 Gen.sample 10 5 (Arb.toGen orderedNoDupArb);;
 
@@ -113,13 +115,13 @@ let rec insert x = function
 //insert an element and check is ordered
 let ``if ss is an ordered set then inserting x in ss is still ordered`` arb (x: int) =
     Prop.forAll arb (fun l -> insert x l |> order)
-//ok now let's check it remember that function insert
+//ok now let's check it!! remember that the function insert
 //does insert element in order 
 do Check.Quick <| 
     ``if ss is an ordered set then inserting x in ss is still ordered`` orderedNoDupArb;;
 //so basicly what we do is define a generator with some given properties
 //than we check that for every element generated holds the property
-//we are checking which in this case is checking that inserting a int
+//given!! Which in this case is checking that inserting a int
 //in a int list mantain the list ordered: order(insert x l)
  
 //---now we want length between n and m we need to filter that---
@@ -150,9 +152,14 @@ let pairsSameLength =
 let checking (l1, l2) = 
     let l = List.zip l1 l2 in 
         List.unzip l = (l1, l2);; 
-//for each pair if lists generated do the checking wanted
+//for each pair in lists generated do the checking wanted
 let ``zip is the inverse of unzip`` arb =
     Prop.forAll arb checking;;   
 //we pass to FsCheck the pairs of list with same length
 //generated from pairSameLength and the property to check
 do Check.Quick <| ``zip is the inverse of unzip`` pairsSameLength;;
+//basicly we are passing a boolean property to check which
+//verifies that zip is the inverse of unzip
+//and we provide the lists to check that, using an 
+//arbitrary with given prop(in this case pair of lists of the same length)
+//this Arb will be used by FsCheck to create the proper generator

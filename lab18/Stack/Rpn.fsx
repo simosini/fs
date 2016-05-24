@@ -29,6 +29,19 @@ let rpn4 = [ C 10 ; C 6 ; C 1 ; Op Minus ; Op Prod ; C 4 ; Op Minus ; C 2 ; C 5 
 // 10 6 1 - * 4 - 2 5 * +
 // 10 * (6 - 1)  - 4 +  2 * 5
 
+let rpn5 = [ C 7; C 6; Op Add ; C 5; Op Prod; C 4; C 3; Op Prod; Op Add ]
+// 7 6 + 5 * 4 3 * +
+// (7 + 6) * 5 + 4 * 3
+
+let toString exp = 
+    match exp with
+    | C x ->" " + string x + " "
+    | Op Add -> " + "
+    | Op Prod -> " * "
+    | Op Minus -> " - "
+
+let print_exp rpn = List.fold ( + ) "" (List.map toString rpn)
+
 let rec eval l (s : Stack<int>) =
     match l with
         | [] -> 
@@ -52,7 +65,8 @@ let rec eval l (s : Stack<int>) =
 
 let evalRpn l = eval l (empty : Stack<int>)
 
-let a = evalRpn rpn1 //= 2 
-let b = evalRpn rpn2 //= 16
-let c = evalRpn rpn3 //= 26
-let d = evalRpn rpn4 //= 56
+let a = "Eval of" + print_exp rpn1 + " is equal to " + string (evalRpn rpn1) //= 2 
+let b = "Eval of" + print_exp rpn2 + " is equal to " + string (evalRpn rpn2) //= 16
+let c = "Eval of" + print_exp rpn3 + " is equal to " + string (evalRpn rpn3) //= 26
+let d = "Eval of" + print_exp rpn4 + " is equal to " + string (evalRpn rpn4) //= 56
+let e = "Eval of" + print_exp rpn5 + " is equal to " + string (evalRpn rpn5) //= 77
