@@ -9,7 +9,7 @@ let prop_concat (l : int list) =
 
 do Check.Quick prop_concat;;
 
-let filter p l = List.foldBack (fun h tl -> if (p h) then h::tl else tl  ) l [];;
+let filter p l = List.foldBack (fun h tl -> if (p h) then h::tl else tl  ) l [];; 
 
 let prop_filter p (l : 'a list list) =
     filter p l = List.filter p l;;
