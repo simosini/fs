@@ -74,6 +74,7 @@ let even10 =  Seq.initInfinite (fun x -> x*2 + 10);;
 Seq.item 0 even10;; //10
 //sqTrue : sequenza costante true, true, true, ....
 let sqTrue =   Seq.initInfinite (fun x -> x = x);;
+//or let sqTrue = Seq.initInfinite(fun x -> true)
 Seq.take 3 sqTrue;; //[true; true; true]
 //sqTrueFalse: sequenza true, false, true, false, true, false, ...
 let sqTrueFalse =  Seq.initInfinite (fun x -> x%2 = 0);; 
@@ -151,7 +152,7 @@ Seq.take 15 seq1;; // [0; 1; 4; 9; ...]
 //iii
 let rec finiteMap sq f = Seq.delay(fun() -> 
            if Seq.isEmpty sq then Seq.empty
-           else cons (f (Seq.head sq))(map (Seq.tail sq) f));;
+           else cons (f (Seq.head sq))(finiteMap (Seq.tail sq) f));;
  
 let seq2 = seq [1;2;3;4];;       
 let seq3 = finiteMap seq2 (fun x -> x * x);;

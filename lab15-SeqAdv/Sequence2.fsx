@@ -33,7 +33,7 @@ let rec sieveC sq =
                     
 let primesC = Seq.cache primes;; 
 Seq.item 200 primesC;; //very slow increase number slowly
-Seq.item 1000 primesC;; //super slow if u strasrts from here
+Seq.item 1000 primesC;; //super slow if u start from here
 Seq.item 1001 primesC;; // immediate because of caching
 
 //     ELENCO DEI FILE IN UNA DIRECTORY
