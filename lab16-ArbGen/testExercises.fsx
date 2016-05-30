@@ -62,7 +62,7 @@ Gen.sample 50 10 (Arb.toGen(Arb.filter (fun l -> List.isEmpty l |> not) Arb.from
 let filter l = order l && (List.isEmpty l |> not);;
 //this is an Arb of int list with the given properties
 let ordArb =
-    Arb.from<int list> |> Arb.filter (fun l -> filter l) ;;
+    Arb.from<int list> |> Arb.filter filter ;;
 
 Gen.sample 50 10 (Arb.toGen ordArb);;
  //let's say now we want the list to have at least 5 elements
